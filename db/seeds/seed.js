@@ -4,7 +4,7 @@ const {
   commentData,
   userData,
 } = require('../data/index.js');
-const { changeTimeFormat, createLookup, belongsToFormat } = require('../utils/data-manipulation');
+const { changeTimeFormat, createLookup, formatComments } = require('../utils/data-manipulation');
 
 exports.seed = (knex) => {
   return knex.migrate
@@ -30,7 +30,15 @@ exports.seed = (knex) => {
       .returning('*')
     })
     .then((articleRows) => {
-      const lookup = createLookup(articleRows, 'title', 'article_id');
-      console.log(lookup);
+      const articleLookup = createLookup(articleRows, 'title', 'article_id');
+      const timeComments = changeTimeFormat(commentData);
+      const formattedComments = formatComments(timeComments, articleLookup);
+      return knex
+      .insert(formattedComments)
+      .into('comments')
+      .returning('*')
     })
+    .then(() => {
+      return;
+    });
 };

@@ -16,11 +16,11 @@ exports.changeTimeFormat = (dataSet) => {
   });
 };
 
-exports.belongsToFormat = (data, lookup) => {
+exports.formatComments = (data, lookup) => {
   return data.map((dataElement) => {
     const dataClone = {...dataElement};
     dataClone.article_id = lookup[dataClone.belongs_to];
     delete dataClone.belongs_to;
     return dataClone;
-  })  
-}
+  });
+};

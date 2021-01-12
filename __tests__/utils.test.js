@@ -1,6 +1,4 @@
-process.env.NODE_ENV = 'test';
-const request = require('supertest');
-const { createLookup, changeTimeFormat, belongsToFormat } = require('../db/utils/data-manipulation');
+const { createLookup, changeTimeFormat, formatComments } = require('../db/utils/data-manipulation');
 
 describe('createLookup', () => {
   it('Returns empty object when passed no value', () => {
@@ -141,11 +139,11 @@ describe('changeTimeFormat', () => {
   });
 });
 
-describe('belongsToFormat', () => {
+describe('formatComments', () => {
   it('Returns an empty array if passed empty array', () => {
     const input = [];
-    expect(belongsToFormat(input, {})).toEqual([]);
-    expect(belongsToFormat(input, {})).not.toBe(input);
+    expect(formatComments(input, {})).toEqual([]);
+    expect(formatComments(input, {})).not.toBe(input);
   });
   it('Returns new objects without mutating the originals', () => {
     const input = [
@@ -167,9 +165,9 @@ describe('belongsToFormat', () => {
       }
     ];
     const lookup = createLookup('belongs_to', 1)
-    belongsToFormat(input, lookup);
+    formatComments(input, lookup);
     expect(input).toEqual(expected);
-    expect(belongsToFormat(input, lookup)[0]).not.toBe(input[0]);
+    expect(formatComments(input, lookup)[0]).not.toBe(input[0]);
   });
   it('Returns a formatted object (article_id instead of belongs_to)', () => {
     const input = [
@@ -191,6 +189,6 @@ describe('belongsToFormat', () => {
         created_at: 1468087638932,
       }
     ];
-    expect(belongsToFormat(input, lookup)).toEqual(expected);
+    expect(formatComments(input, lookup)).toEqual(expected);
   });
 });
