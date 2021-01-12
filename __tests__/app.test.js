@@ -90,3 +90,39 @@ describe('/api/users', () => {
         });
     });
 });
+
+describe('/api/articles', () => {
+    describe('/:article_id', () => {
+        describe('HAPPY PATH :)', () => {
+            it('GET : 200 - responds with the specified article object', () => {
+                return request(app)
+                    .get('/api/articles/1')
+                    .expect(200)
+                    .then(({ body }) => {
+                        expect(body).toEqual({
+                            article: {
+                                author: "butter_bridge",
+                                title: "Living in the shadow of a great man",
+                                article_id: 1,
+                                body: "I find this existence challenging",
+                                topic: "mitch",
+                                created_at: "2018-11-15T12:21:54.171Z",
+                                votes: 100,
+                                comment_count: "13",
+                            }
+                        });
+                    });
+            });
+        });
+        xdescribe('ERRORS :(', () => {
+            it('GET : 404 - when given an article_id that does not exist', () => {
+                return request(app)
+                    .get('/api/articles/9999999')
+                    .expect(404)
+                    .then(({ body }) => {
+                        expect(body.msg).toEqual('Article 9999999 not found')
+                    });
+            });
+        });
+    });
+});
