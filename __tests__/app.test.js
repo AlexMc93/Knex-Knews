@@ -11,6 +11,25 @@ beforeEach(() => {
     return connection.seed.run()
 })
 
+describe('/invalidRoute', () => {
+    it('any method : 404 - invalid route', () => {
+        const getReq = request(app)
+                        .get('/thisIsNotAValidRoute')
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe('Route not found')
+                        });
+
+        const delReq = request(app)
+                        .del('/alsoNotAValidRoute')
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe('Route not found')
+                        });
+        return Promise.all([getReq, delReq]);
+    });
+});
+
 describe('/api/topics', () => {
     describe('HAPPY PATH :)', () => {
         it('GET : 200 - response with an array of topics', () => {
@@ -54,7 +73,7 @@ describe('/api/users', () => {
                     .get('/api/users/lurker')
                     .expect(200)
                     .then(({ body }) => {
-                        expect(body.user[0]).toEqual({
+                        expect(body.user).toEqual({
                             username: 'lurker',
                             name: 'do_nothing',
                             avatar_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
@@ -63,7 +82,7 @@ describe('/api/users', () => {
             });
         });
         describe('ERRORS :(' , () => {
-            it('GET : 404 - when given a username that does not exist', () => {
+            it('GET : 404 - when given a valid username that does not exist', () => {
                 return request(app)
                     .get('/api/users/iAmNotAUser')
                     .expect(404)
@@ -115,7 +134,7 @@ describe('/api/articles', () => {
             });
         });
         xdescribe('ERRORS :(', () => {
-            it('GET : 404 - when given an article_id that does not exist', () => {
+            it('GET : 404 - when given a valid article_id that does not exist', () => {
                 return request(app)
                     .get('/api/articles/9999999')
                     .expect(404)
@@ -123,6 +142,9 @@ describe('/api/articles', () => {
                         expect(body.msg).toEqual('Article 9999999 not found')
                     });
             });
+            it('GET : 400 - when given an invalid article_id', () => {
+                
+            })
         });
     });
 });

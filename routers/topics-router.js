@@ -1,6 +1,6 @@
 const topicsRouter = require('express').Router();
 const { getAllTopics } = require('../controllers/topics-controller');
-const { invalidMethodError } = require('../error-handling');
+const { invalidMethodError } = require('../controllers/error-handling');
 
 topicsRouter
     .route('/')
