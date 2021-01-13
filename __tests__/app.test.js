@@ -132,19 +132,115 @@ describe('/api/articles', () => {
                         });
                     });
             });
+            it('DELETE : 204 - no content upon successful deletion, also deletes associated comments', () => {
+                const deleted = request(app)
+                                .del('/api/articles/1')
+                                .expect(204)
+
+                const notFound = request(app)
+                                  .get('/api/articles/1')
+                                  .expect(404)
+                                  .then(({ body }) => {
+                                      expect(body.msg).toBe('Article ID 1 not found')
+                                  });
+
+                // NEED TO ADD IN AN ASSERTION HERE FOR COMMENTS DELETED AFTER PATH IS MADE
+                
+                return Promise.all([deleted, notFound]);
+            });
+            it('PATCH : 200 - responds with the updated article after incrementing the votes property by the amount specified in the request body', () => {
+                return request(app)
+                        .patch('/api/articles/1')
+                        .send({inc_votes: 1})
+                        .expect(200)
+                        .then(({ body }) => {
+                            expect(body.article).toEqual({
+                                author: "butter_bridge",
+                                title: "Living in the shadow of a great man",
+                                article_id: 1,
+                                body: "I find this existence challenging",
+                                topic: "mitch",
+                                created_at: "2018-11-15T12:21:54.171Z",
+                                votes: 101
+                                //comment_count: "13",  <--- not sure if this property is needed? 
+                            });
+                        });
+            });
+            it('PATCH : 200 - also works appropriately when given a negative number as the value of inc_votes, and ignores other properties on the request body', () => {
+                return request(app)
+                        .patch('/api/articles/1')
+                        .send({inc_votes: -1, hello: 500})
+                        .expect(200)
+                        .then(({ body }) => {
+                            expect(body.article).toEqual({
+                                author: "butter_bridge",
+                                title: "Living in the shadow of a great man",
+                                article_id: 1,
+                                body: "I find this existence challenging",
+                                topic: "mitch",
+                                created_at: "2018-11-15T12:21:54.171Z",
+                                votes: 99,
+                                //comment_count: "13",
+                            });
+                        });
+            });
         });
-        xdescribe('ERRORS :(', () => {
+        describe('ERRORS :(', () => {
             it('GET : 404 - when given a valid article_id that does not exist', () => {
                 return request(app)
                     .get('/api/articles/9999999')
                     .expect(404)
                     .then(({ body }) => {
-                        expect(body.msg).toEqual('Article 9999999 not found')
+                        expect(body.msg).toEqual('Article ID 9999999 not found')
                     });
             });
             it('GET : 400 - when given an invalid article_id', () => {
-                
-            })
+                return request(app)
+                    .get('/api/articles/notAnArticleId')
+                    .expect(400)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe('Bad request - please try something else!')
+                    });
+            });
+            it('POST : 405 - invalid method', () => {
+                return request(app)
+                    .post('/api/articles/1')
+                    .send({})
+                    .expect(405)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe('Not allowed - invalid request method')
+                    });
+            });
+            it('PATCH : 404 - when given a valid article_id that does not exist', () => {
+                return request(app)
+                        .patch('/api/articles/9999')
+                        .send({inc_votes: 1})
+                        .expect(404)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe('Article ID 9999 not found')
+                        })
+            });
+            it('PATCH : 400 - when given an invalid article_id', () => {
+                return request(app)
+                        .patch('/api/articles/thisIsNotAnId')
+                        .send({inc_votes: 1})
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe('Bad request - please try something else!')
+                        })
+            });
+            xit('PATCH : 400 - when request body does not have inc_votes property', () => {
+                return request(app)
+                        .patch('/api/articles/1')
+                        .send({hello: 5})
+                        .expect(400)
+                        .then(({ body }) => {
+                            expect(body.msg).toBe('Bad request - please try something else!')
+                        })
+            });
+            xit('PATCH : 400 - when inc_votes is an invalid value', () => {
+
+            });
         });
     });
 });
