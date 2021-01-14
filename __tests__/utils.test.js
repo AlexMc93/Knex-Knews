@@ -169,7 +169,7 @@ describe('formatComments', () => {
     expect(input).toEqual(expected);
     expect(formatComments(input, lookup)[0]).not.toBe(input[0]);
   });
-  it('Returns a formatted object (article_id instead of belongs_to)', () => {
+  it('Returns a formatted object (article_id instead of belongs_to, author instead of created_by)', () => {
     const input = [
       {
         body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
@@ -184,7 +184,7 @@ describe('formatComments', () => {
       {
         body: 'Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.',
         article_id: 1,
-        created_by: 'tickle122',
+        author: 'tickle122',
         votes: -1,
         created_at: 1468087638932,
       }

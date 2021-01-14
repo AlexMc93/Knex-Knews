@@ -1,8 +1,8 @@
-const { fetchArticleById, removeArticleById, updateArticleById } = require('../models/articles-models');
+const { selectArticleById, removeArticleById, updateArticleById, selectAllArticles } = require('../models/articles-models');
 
 const getArticleById = (req, res, next) => {
     const { article_id } = req.params;
-    fetchArticleById(article_id)
+    selectArticleById(article_id)
         .then((article) => {
             if (!article) {
             return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
@@ -33,8 +33,6 @@ const patchArticleById = (req, res, next) => {
         .then((article) => {
             if (!article) {
             return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
-            // } else if (!changeVotes) {
-            // return Promise.reject()
             } else {
             res.status(200).send({ article })
             }
@@ -42,4 +40,13 @@ const patchArticleById = (req, res, next) => {
         .catch(next)
 }
 
-module.exports = { getArticleById, deleteArticleById, patchArticleById }
+const getAllArticles = (req, res, next) => {
+    const { sort_by, order, author, topic } = req.query;
+    selectAllArticles(sort_by, order, author, topic)
+        .then((articles) => {
+            res.status(200).send({ articles })
+        })
+        .catch(next)
+}
+
+module.exports = { getArticleById, deleteArticleById, patchArticleById, getAllArticles }

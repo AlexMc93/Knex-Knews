@@ -11,8 +11,13 @@ const customError = (err, req, res, next) => {
 }
 
 const PSQLError = (err, req, res, next) => {
-    if (err.code) {
-        console.log(err.message, err.code)
+    if (err.code === '23503') {
+        if (err.detail.endsWith('"articles".')) {
+            res.status(404).send({msg: 'Article not found'})
+        } else if (err.detail.endsWith('"users".')) {
+            res.status(404).send({msg: 'User not found'})
+        }
+    } else if (err.code) {
         res.status(400).send({msg: 'Bad request - please try something else!'})
     } else {
         next(err)
@@ -20,7 +25,6 @@ const PSQLError = (err, req, res, next) => {
 }
 
 const serverError = (err, req, res, next) => {
-    console.log(err)
     res.status(500).send({msg: 'Sorry - server error!'})
 }
 

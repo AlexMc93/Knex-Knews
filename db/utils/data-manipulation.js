@@ -20,6 +20,8 @@ exports.formatComments = (data, lookup) => {
   return data.map((dataElement) => {
     const dataClone = {...dataElement};
     dataClone.article_id = lookup[dataClone.belongs_to];
+    dataClone.author = dataElement.created_by
+    delete dataClone.created_by;
     delete dataClone.belongs_to;
     return dataClone;
   });
