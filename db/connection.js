@@ -1,5 +1,18 @@
+const ENV = process.env.NODE_ENV || 'development';
 const knex = require('knex');
-const config = require('../knexfile');
+
+const config = 
+    ENV === 'production'
+    ? {
+        client: 'pg',
+        connection: {
+            connectionString: process.env.DATABASE_URL,
+            ssl: {
+                rejectUnauthorized: false
+            }
+        }
+    }
+    : require('../knexfile');
 
 const connection = knex(config);
 
