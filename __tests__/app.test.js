@@ -683,6 +683,18 @@ describe.only('/api/comments/:comment_id', () => {
                 });
             });
         });
+        it('DELETE : 204 - no content upon successful deletion', () => {
+            const deleted = request(app)
+            .del('/api/comments/1')
+            .expect(204)
+
+            const notFound = request(app)
+            .patch('/api/comments/1')
+            .send({inc_votes: 1})
+            .expect(404)
+            
+            return Promise.all([deleted, notFound])
+        })
     });
     describe('ERRORS :(', () => {
         it('PATCH : 404 - when given a valid comment id that does not exist', () => {
@@ -721,5 +733,21 @@ describe.only('/api/comments/:comment_id', () => {
                 expect(body.msg).toBe('Bad request - please try something else!')
             });
         });
+        it('DELETE : 404 - when given a valid comment id that does not exist', () => {
+            return request(app)
+            .del('/api/comments/99999')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Comment not found')
+            });
+        });
+        it('DELETE : 400 - when given an invalid comment id', () => {
+            return request(app)
+            .del('/api/comments/thisIsDefinitelyNotValid')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            })
+        })
     });
 });

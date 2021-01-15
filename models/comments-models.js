@@ -50,7 +50,20 @@ const updateCommentById = (comment_id, inc_votes) => {
             })
         }
         return comment
-    })
+    });
 }
 
-module.exports = { createCommentOnArticle, selectCommentsOnArticle, updateCommentById }
+const removeCommentById = (comment_id) => {
+    return connection('comments')
+    .where('comment_id', '=', comment_id)
+    .del()
+    .then((deleteCount) => {
+        if (deleteCount) return;
+        else return Promise.reject({
+            status: 404,
+            msg: 'Comment not found'
+        });
+    });
+}
+
+module.exports = { createCommentOnArticle, selectCommentsOnArticle, updateCommentById, removeCommentById }
