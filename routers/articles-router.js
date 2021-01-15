@@ -7,6 +7,7 @@ articlesRouter
     .route('/')
     .get(getAllArticles)
     .post(postArticle)
+    .all(invalidMethodError)
 
 articlesRouter
     .route('/:article_id')

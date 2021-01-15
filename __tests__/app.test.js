@@ -454,7 +454,7 @@ describe('/api/articles/:article_id/comments', () => {
     });
 });
 
-describe.only('/api/articles', () => {
+describe('/api/articles', () => {
     describe('HAPPY PATH :)', () => {
         it('GET : 200 - responds with an array of all articles', () => {
             return request(app)
@@ -637,5 +637,54 @@ describe.only('/api/articles', () => {
                 expect(body.msg).toBe('User not found')
             });
         });
+        it('INVALID METHODS : 405 - for del/patch', () => {
+            return request(app)
+            .patch('/api/articles')
+            .send({hello: 'this should result in a 405'})
+            .expect(405)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not allowed - invalid request method')
+            });
+        });
+    });
+});
+
+describe.only('/api/comments/:comment_id', () => {
+    describe('HAPPY PATH :)', () => {
+        it('PATCH : 200 - responds with the updated comment', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({inc_votes: 10})
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comment).toEqual({
+                    comment_id: 1,
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    article_id: 9,
+                    author: 'butter_bridge',
+                    votes: 26,
+                    created_at: expect.any(String)
+                });
+            });
+        });
+        it('PATCH : 200 - works appropriately for negative inc_votes and also ignores other properties on request body', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({inc_votes: -10, hello: 1000})
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comment).toEqual({
+                    comment_id: 1,
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    article_id: 9,
+                    author: 'butter_bridge',
+                    votes: 6,
+                    created_at: expect.any(String)
+                });
+            });
+        });
+    });
+    describe('ERRORS :(', () => {
+
     });
 });

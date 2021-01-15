@@ -30,4 +30,19 @@ const selectCommentsOnArticle = (article_id, sort_by = "created_at", order = "de
     }
 }
 
-module.exports = { createCommentOnArticle, selectCommentsOnArticle }
+const updateCommentById = (comment_id, inc_votes) => {
+    if (!inc_votes) {
+        return Promise.reject({
+            status: 400,
+            msg: 'Bad request - please try something else!'
+        })
+    }
+
+    return connection('comments')
+    .where('comment_id', '=', comment_id)
+    .increment('votes', inc_votes)
+    .returning('*')
+    .then(([comment]) => comment)
+}
+
+module.exports = { createCommentOnArticle, selectCommentsOnArticle, updateCommentById }
