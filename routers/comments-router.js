@@ -6,6 +6,7 @@ commentsRouter
     .route('/:comment_id')
     .patch(patchCommentById)
     .delete(deleteCommentById)
+    .post(invalidMethodError)
 
 
 

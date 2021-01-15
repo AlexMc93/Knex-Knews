@@ -649,7 +649,7 @@ describe('/api/articles', () => {
     });
 });
 
-describe.only('/api/comments/:comment_id', () => {
+describe('/api/comments/:comment_id', () => {
     describe('HAPPY PATH :)', () => {
         it('PATCH : 200 - responds with the updated comment', () => {
             return request(app)
@@ -748,6 +748,39 @@ describe.only('/api/comments/:comment_id', () => {
             .then(({ body }) => {
                 expect(body.msg).toBe('Bad request - please try something else!')
             })
+        });
+        it('INVALID METHODS : 405 - for post', () => {
+            return request(app)
+            .post('/api/comments/20')
+            .send({newCommentStuff: 'blahblah'})
+            .expect(405)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not allowed - invalid request method')
+            })
         })
     });
 });
+
+describe('/api', () => {
+    describe('HAPPY PATH :)', () => {
+        it('GET : 200 - responds with a JSON describing all available endpoints on the API', () => {
+            return request(app)
+            .get('/api')
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.endpoints).toHaveProperty('GET /api')
+                expect(body.endpoints).toHaveProperty('GET /api/topics')
+            })
+        })
+    });
+    describe('ERRORS :(', () => {
+        it('INVALID METHODS : 405 - for del/patch/post', () => {
+            return request(app)
+            .del('/api')
+            .expect(405)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not allowed - invalid request method')
+            })
+        })
+    });
+})
