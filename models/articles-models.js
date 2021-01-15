@@ -99,7 +99,12 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
             return articles
         }
     })
-    
 }
 
-module.exports = { selectArticleById, removeArticleById, updateArticleById, selectAllArticles };
+const insertArticle = (newArticle) => {
+    return connection('articles')
+    .insert(newArticle)
+    .returning('*')
+}
+
+module.exports = { selectArticleById, removeArticleById, updateArticleById, selectAllArticles, insertArticle };

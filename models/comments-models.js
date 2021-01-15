@@ -1,9 +1,8 @@
 const connection = require('../db/connection');
 
-const createCommentOnArticle = (article_id, comment) => {
+const createCommentOnArticle = (comment) => {
     return connection('comments')
             .insert(comment)
-            .where('article_id', '=', article_id)
             .returning('*')
 };
 

@@ -525,11 +525,40 @@ describe.only('/api/articles', () => {
             .get('/api/articles?topic=mitch&author=rogersop&sort_by=title&order=asc')
             .expect(200)
             .then(({ body: { articles } }) => {
-                console.log(articles)
                 expect(articles.length).toBe(2)
                 expect(articles).toBeSortedBy('title')
                 expect(articles[0].topic).toBe('mitch')
                 expect(articles[0].author).toBe('rogersop')
+            });
+        });
+        it('GET : 200 - responds with an empty array when given a valid query (topic/author exists) but there are no associated articles', () => {
+            return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toEqual([])
+            })
+        });
+        it('POST : 201 - responds with the newly created article (including article_id, votes set to 0 and created_at timestamp)', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'test article',
+                topic: 'paper',
+                author: 'lurker',
+                body: 'hello hello hello'
+            })
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.article).toEqual({
+                    article_id: expect.any(Number),
+                    title: 'test article',
+                    topic: 'paper',
+                    author: 'lurker',
+                    body: 'hello hello hello',
+                    votes: 0,
+                    created_at: expect.any(String)
+                });
             });
         });
     });
@@ -564,6 +593,48 @@ describe.only('/api/articles', () => {
             .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe('Topic not found')
+            });
+        });
+        it('POST : 400 - when given a malformed body or missing one of the required properties', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'testing',
+                topic: 'paper',
+                user: 'lurker',
+                ohNo: 'where is the body?'
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('POST : 404 - when given a topic that does not exist', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'another test',
+                topic: 'javascript',
+                user: 'lurker',
+                body: 'this will not work!'
+            })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Topic not found')
+            });
+        });
+        it('POST : 404 - when given a user that does not exist', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'yes its yet another test',
+                topic: 'paper',
+                author: 'this is not a real user',
+                body: 'super cool article stuff'
+            })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('User not found')
             });
         });
     });

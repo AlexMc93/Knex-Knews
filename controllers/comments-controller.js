@@ -4,7 +4,7 @@ const postCommentOnArticle = (req, res, next) => {
     const { article_id } = req.params;
     const newComment = {author: req.body.username, body: req.body.body, article_id: article_id};
 
-    createCommentOnArticle(article_id, newComment)
+    createCommentOnArticle(newComment)
         .then(([createdComment]) => {
             res.status(201).send({comment: createdComment})
         })
