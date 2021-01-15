@@ -42,7 +42,15 @@ const updateCommentById = (comment_id, inc_votes) => {
     .where('comment_id', '=', comment_id)
     .increment('votes', inc_votes)
     .returning('*')
-    .then(([comment]) => comment)
+    .then(([comment]) => {
+        if (!comment) {
+            return Promise.reject({
+                status: 404,
+                msg: 'Comment not found'
+            })
+        }
+        return comment
+    })
 }
 
 module.exports = { createCommentOnArticle, selectCommentsOnArticle, updateCommentById }

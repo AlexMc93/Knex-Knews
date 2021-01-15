@@ -685,6 +685,41 @@ describe.only('/api/comments/:comment_id', () => {
         });
     });
     describe('ERRORS :(', () => {
-
+        it('PATCH : 404 - when given a valid comment id that does not exist', () => {
+            return request(app)
+            .patch('/api/comments/99999')
+            .send({inc_votes: 10})
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Comment not found')
+            })
+        });
+        it('PATCH : 400 - when given an invalid comment id', () => {
+            return request(app)
+            .patch('/api/comments/thisIsNotAnID')
+            .send({inc_votes: 10})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            })
+        });
+        it('PATCH : 400 - when there is no inc_votes property sent', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({changeVotesBy: 10})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            })
+        });
+        it('PATCH : 400 - when the value for inc_votes is invalid', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({inc_votes: 'invalid'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
     });
 });
