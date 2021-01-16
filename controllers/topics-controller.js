@@ -8,4 +8,4 @@ const getAllTopics = (req, res, next) => {
     .catch(next) 
 }
 
-module.exports = { getAllTopics } ;
+module.exports = { getAllTopics };

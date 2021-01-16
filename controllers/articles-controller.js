@@ -4,11 +4,7 @@ const getArticleById = (req, res, next) => {
     const { article_id } = req.params;
     selectArticleById(article_id)
         .then((article) => {
-            if (!article) {
-            return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
-            } else {
             res.status(200).send({ article })
-            }
         })
         .catch(next)
 }
@@ -16,27 +12,15 @@ const getArticleById = (req, res, next) => {
 const deleteArticleById = (req, res, next) => {
     const { article_id } = req.params;
     removeArticleById(article_id)
-        .then((deleteCount) => {
-            if (deleteCount) {
-                res.sendStatus(204)
-            } else {
-                return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
-            }
-        })
+        .then(() => res.sendStatus(204))
         .catch(next)
 }
 
 const patchArticleById = (req, res, next) => {
-    const changeVotes = req.body.inc_votes;
+    const { inc_votes } = req.body;
     const { article_id } = req.params;
-    updateArticleById(changeVotes, article_id)
-        .then((article) => {
-            if (!article) {
-            return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
-            } else {
-            res.status(200).send({ article })
-            }
-        })
+    updateArticleById(inc_votes, article_id)
+        .then((article) => res.status(200).send({ article }))
         .catch(next)
 }
 
@@ -50,7 +34,8 @@ const getAllArticles = (req, res, next) => {
 }
 
 const postArticle = (req, res, next) => {
-    const newArticle = {title: req.body.title, topic: req.body.topic, author: req.body.author, body: req.body.body}
+    const { title, topic, author, body } = req.body;
+    const newArticle = { title, topic, author, body };
     insertArticle(newArticle)
         .then(([article]) => {
             res.status(201).send({ article })

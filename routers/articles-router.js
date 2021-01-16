@@ -14,7 +14,7 @@ articlesRouter
     .get(getArticleById)
     .delete(deleteArticleById)
     .patch(patchArticleById)
-    .post(invalidMethodError)
+    .all(invalidMethodError)
 
 articlesRouter
     .route('/:article_id/comments')

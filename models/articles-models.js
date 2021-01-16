@@ -1,5 +1,6 @@
 const connection = require('../db/connection');
-const { fetchUserByUsername } = require('../controllers/users-controller');
+const { fetchUserByUsername } = require('./users-models');
+const { fetchAllTopics } = require('./topics-models');
 
 const selectArticleById = (article_id) => {
     return connection('articles')
@@ -25,19 +26,25 @@ const removeArticleById = (article_id) => {
     return connection('articles')
     .where('article_id', '=', article_id)
     .del()
+    .then((deleteCount) => {
+        if (!deleteCount) {
+            return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
+        }
+    })
 }
 
-const updateArticleById = (changeVotes, article_id) => {
-    if (!changeVotes) return Promise.reject({
-        status: 400, 
-        msg: 'Bad request - please try something else!'
-    })
-
+const updateArticleById = (changeVotes = 0, article_id) => {
     return connection('articles')
     .where('article_id', '=', article_id)
     .increment('votes', changeVotes)
     .returning('*')
-    .then(([article]) => article)
+    .then(([article]) => {
+        if (!article) {
+            return Promise.reject({status: 404, msg: `Article ID ${article_id} not found`})
+        } else {
+            return article
+        }
+    })
 }
 
 const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
@@ -48,6 +55,12 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
             msg: 'Order must be equal to `asc` or `desc`'
         })
     }
+
+    let userQuery = undefined;
+    let topicQuery = undefined;
+
+    if (author) userQuery = fetchUserByUsername(author);
+    if (topic) topicQuery = fetchAllTopics(topic);
 
     const articleQuery = connection('articles')
     .select('articles.*')
@@ -60,36 +73,8 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
     .groupBy('articles.article_id')
     .orderBy(sort_by, order);
 
-    return connection('users')
-    .select('*')
-    .modify((query) => {
-        if (author) query.where('username', '=', author)
-    })
-    .then((authors) => {
-        if (!authors.length) {
-            return Promise.reject({
-                status: 404,
-                msg: 'User not found'
-            })
-        } else {
-            return connection('topics')
-            .select('*')
-            .modify((query) => {
-                if (topic) query.where('slug', '=', topic)
-            })
-        }
-    })
-    .then((topics) => {
-        if (!topics.length) {
-            return Promise.reject({
-                status: 404,
-                msg: 'Topic not found'
-            })
-        } else {
-            return articleQuery
-        }
-    })
-    .then((articles) => {
+    return Promise.all([userQuery, topicQuery, articleQuery])
+    .then(([userExists, topicExists, articles]) => {
         if (articles.length) {
             return articles.map((article) => {
                 article.comment_count = +article.comment_count

@@ -2,11 +2,12 @@ const { createCommentOnArticle, selectCommentsOnArticle, updateCommentById, remo
 
 const postCommentOnArticle = (req, res, next) => {
     const { article_id } = req.params;
-    const newComment = {author: req.body.username, body: req.body.body, article_id: article_id};
+    const { username, body } = req.body; 
+    const newComment = {author: username, body, article_id};
 
     createCommentOnArticle(newComment)
-        .then(([createdComment]) => {
-            res.status(201).send({comment: createdComment})
+        .then(([comment]) => {
+            res.status(201).send({comment})
         })
         .catch(next)
 }

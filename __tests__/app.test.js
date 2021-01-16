@@ -163,7 +163,7 @@ describe('/api/articles', () => {
             it('PATCH : 200 - responds with the updated article after incrementing the votes property by the amount specified in the request body', () => {
                 return request(app)
                 .patch('/api/articles/1')
-                .send({inc_votes: 1})
+                .send({inc_votes: 10})
                 .expect(200)
                 .then(({ body }) => {
                     expect(body.article).toEqual({
@@ -173,7 +173,7 @@ describe('/api/articles', () => {
                         body: "I find this existence challenging",
                         topic: "mitch",
                         created_at: "2018-11-15T12:21:54.171Z",
-                        votes: 101
+                        votes: 110
                     });
                 });
             });
@@ -191,6 +191,23 @@ describe('/api/articles', () => {
                         topic: "mitch",
                         created_at: "2018-11-15T12:21:54.171Z",
                         votes: 99
+                    });
+                });
+            });
+            it('PATCH : 200 - request with no information in the body responds with the unchanged article', () => {
+                return request(app)
+                .patch('/api/articles/1')
+                .send({})
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.article).toEqual({
+                        author: "butter_bridge",
+                        title: "Living in the shadow of a great man",
+                        article_id: 1,
+                        body: "I find this existence challenging",
+                        topic: "mitch",
+                        created_at: "2018-11-15T12:21:54.171Z",
+                        votes: 100
                     });
                 });
             });
@@ -234,15 +251,6 @@ describe('/api/articles', () => {
                 return request(app)
                 .patch('/api/articles/thisIsNotAnId')
                 .send({inc_votes: 1})
-                .expect(400)
-                .then(({ body }) => {
-                    expect(body.msg).toBe('Bad request - please try something else!')
-                })
-            });
-            it('PATCH : 400 - when request body does not have inc_votes property', () => {
-                return request(app)
-                .patch('/api/articles/1')
-                .send({hello: 5})
                 .expect(400)
                 .then(({ body }) => {
                     expect(body.msg).toBe('Bad request - please try something else!')
@@ -584,7 +592,7 @@ describe('/api/articles', () => {
             .get('/api/articles?author=thisIsNotValid')
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe('User not found')
+                expect(body.msg).toBe('User thisIsNotValid not found')
             })
         });
         it('GET : 404 - when given a topic that does not exist', () => {
@@ -592,7 +600,7 @@ describe('/api/articles', () => {
             .get('/api/articles?topic=thisIsAlsoNotValid')
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe('Topic not found')
+                expect(body.msg).toBe('Topic thisIsAlsoNotValid not found')
             });
         });
         it('POST : 400 - when given a malformed body or missing one of the required properties', () => {
@@ -615,7 +623,7 @@ describe('/api/articles', () => {
             .send({
                 title: 'another test',
                 topic: 'javascript',
-                user: 'lurker',
+                author: 'lurker',
                 body: 'this will not work!'
             })
             .expect(404)

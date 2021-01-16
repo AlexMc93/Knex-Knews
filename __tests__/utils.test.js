@@ -1,10 +1,10 @@
 const { createLookup, changeTimeFormat, formatComments } = require('../db/utils/data-manipulation');
 
 describe('createLookup', () => {
-  it('Returns empty object when passed no value', () => {
+  it('Returns empty object when passed no values', () => {
     expect(createLookup([])).toEqual({});
   });
-  it('Returns the data given as a lookup object', () => {
+  it('Returns the input data as a lookup object with the specified keys and values', () => {
     expect(
       createLookup(
         [
@@ -19,7 +19,7 @@ describe('createLookup', () => {
       )
     ).toEqual({ 1: 2 });
   });
-  it('Returns the data given when passed multiple objects', () => {
+  it('Returns the appropriate lookup object when passed multiple bits of input data', () => {
     expect(
       createLookup(
         [
@@ -164,7 +164,7 @@ describe('formatComments', () => {
         created_at: 1468087638932,
       }
     ];
-    const lookup = createLookup('belongs_to', 1)
+    const lookup = {'a': 1}
     formatComments(input, lookup);
     expect(input).toEqual(expected);
     expect(formatComments(input, lookup)[0]).not.toBe(input[0]);

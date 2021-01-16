@@ -11,16 +11,10 @@ exports.seed = (knex) => {
     .rollback()
     .then(() => knex.migrate.latest())
     .then(() => {
-      return knex
-    .insert(topicData)
-    .into('topics')
-    .returning('*')
-    })
-    .then(() => {
-      return knex
-        .insert(userData)
-        .into('users')
-        .returning('*')
+      return Promise.all([
+        knex.insert(topicData).into('topics'),
+        knex.insert(userData).into('users')
+      ]) 
     })
     .then(() => {
       const formattedArticles = changeTimeFormat(articleData)
@@ -36,9 +30,5 @@ exports.seed = (knex) => {
       return knex
       .insert(formattedComments)
       .into('comments')
-      .returning('*')
-    })
-    .then(() => {
-      return;
     });
 };
