@@ -30,13 +30,7 @@ const selectCommentsOnArticle = (article_id, sort_by = "created_at", order = "de
     }
 }
 
-const updateCommentById = (comment_id, inc_votes) => {
-    if (!inc_votes) {
-        return Promise.reject({
-            status: 400,
-            msg: 'Bad request - please try something else!'
-        })
-    }
+const updateCommentById = (comment_id, inc_votes = 0) => {
 
     return connection('comments')
     .where('comment_id', '=', comment_id)

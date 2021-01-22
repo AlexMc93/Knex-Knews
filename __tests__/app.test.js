@@ -691,6 +691,15 @@ describe('/api/comments/:comment_id', () => {
                 });
             });
         });
+        it('PATCH : 200 - responds with unchanged comment when request body does not contain inc_votes property', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({nothing: 'to see here'})
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comment.votes).toBe(16)
+            })
+        })
         it('DELETE : 204 - no content upon successful deletion', () => {
             const deleted = request(app)
             .del('/api/comments/1')
@@ -718,15 +727,6 @@ describe('/api/comments/:comment_id', () => {
             return request(app)
             .patch('/api/comments/thisIsNotAnID')
             .send({inc_votes: 10})
-            .expect(400)
-            .then(({ body }) => {
-                expect(body.msg).toBe('Bad request - please try something else!')
-            })
-        });
-        it('PATCH : 400 - when there is no inc_votes property sent', () => {
-            return request(app)
-            .patch('/api/comments/1')
-            .send({changeVotesBy: 10})
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe('Bad request - please try something else!')

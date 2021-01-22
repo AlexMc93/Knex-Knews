@@ -10,7 +10,7 @@ const customError = (err, req, res, next) => {
     }
 }
 
-const PSQLError = (err, req, res, next) => {
+const PSQLnotFoundError = (err, req, res, next) => {
     if (err.code === '23503') {
         if (err.detail.endsWith('"articles".')) {
             res.status(404).send({msg: 'Article not found'})
@@ -18,8 +18,14 @@ const PSQLError = (err, req, res, next) => {
             res.status(404).send({msg: 'User not found'})
         } else if (err.detail.endsWith('"topics".')) {
             res.status(404).send({msg: 'Topic not found'})
+        } else if (err.detail.endsWith('"comments".')) {
+            res.status(404).send({msg: 'Comment not found'})
         }
-    } else if (err.code) {
+    } else next(err)
+}
+
+const genericPSQLError = (err, req, res, next) => {
+    if (err.code) {
         res.status(400).send({msg: 'Bad request - please try something else!'})
     } else {
         next(err)
@@ -34,4 +40,4 @@ const invalidMethodError = (req, res, next) => {
     res.status(405).send({ msg: 'Not allowed - invalid request method'})
 }
 
-module.exports = { invalidMethodError, customError, invalidPathError, PSQLError, serverError };
+module.exports = { invalidMethodError, customError, invalidPathError, PSQLnotFoundError, genericPSQLError, serverError };

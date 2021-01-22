@@ -56,9 +56,8 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
         })
     }
 
-    let userQuery = undefined;
-    let topicQuery = undefined;
-
+    let userQuery;
+    let topicQuery;
     if (author) userQuery = fetchUserByUsername(author);
     if (topic) topicQuery = fetchAllTopics(topic);
 

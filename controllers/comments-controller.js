@@ -7,7 +7,7 @@ const postCommentOnArticle = (req, res, next) => {
 
     createCommentOnArticle(newComment)
         .then(([comment]) => {
-            res.status(201).send({comment})
+            res.status(201).send({ comment })
         })
         .catch(next)
 }
