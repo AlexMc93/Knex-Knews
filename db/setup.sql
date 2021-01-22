@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS nc_news_test;
-DROP DATABASE IF EXISTS nc_news;
+DROP DATABASE IF EXISTS knex_knews_test;
+DROP DATABASE IF EXISTS knex_knews;
 
-CREATE DATABASE nc_news_test;
-CREATE DATABASE nc_news;
+CREATE DATABASE knex_knews_test;
+CREATE DATABASE knex_knews;
