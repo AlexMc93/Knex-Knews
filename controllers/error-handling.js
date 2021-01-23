@@ -3,11 +3,8 @@ const invalidPathError = (req, res, next) => {
 }
 
 const customError = (err, req, res, next) => {
-    if (err.status && err.msg) {
-        res.status(err.status).send({msg: err.msg})
-    } else {
-        next(err)
-    }
+    if (err.status && err.msg) res.status(err.status).send({msg: err.msg})
+    else next(err)
 }
 
 const PSQLnotFoundError = (err, req, res, next) => {
@@ -25,11 +22,8 @@ const PSQLnotFoundError = (err, req, res, next) => {
 }
 
 const genericPSQLError = (err, req, res, next) => {
-    if (err.code) {
-        res.status(400).send({msg: 'Bad request - please try something else!'})
-    } else {
-        next(err)
-    }
+    if (err.code) res.status(400).send({msg: 'Bad request - please try something else!'})
+    else next(err)
 }
 
 const serverError = (err, req, res, next) => {

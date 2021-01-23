@@ -1,17 +1,45 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the API"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
+    "queries": ["slug", "sort_by", "order"],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [{ "slug": "football", "description": "Footie!" }, {"etc...": "etc..."}]
+    }
+  },
+  "POST /api/topics": {
+    "description": "creates a new topic and serves it",
+    "exampleRequest": {"slug": "music", "description": "The new Bicep album is AMAZING"},
+    "exampleResponse": {
+      "topic": {"slug": "music", "description": "The new Bicep album is AMAZING"}
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": ["sort_by", "order", "limit", "p"],
+    "exampleResponse": {
+      "users": [{"username": "butter_bridge", "name": "jonny", "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"}, {"etc...": "etc..."}]
+    }
+  },
+  "POST /api/users": {
+    "description": "creates a new user and serves it",
+    "exampleRequest": {"username": "Amac", "name": "alex", "avatar_url": "https://static.tvtropes.org/pmwiki/pub/images/morty_smith_2.png"},
+    "exampleResponse": {
+      "user": {"username": "Amac", "name": "alex", "avatar_url": "https://static.tvtropes.org/pmwiki/pub/images/morty_smith_2.png"}
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a specific user",
+    "parametricEndpoint": "username",
+    "exampleResponse": {
+      "user": {"username": "lurker", "name": "do_nothing", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"}
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles",
+    "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {
@@ -20,8 +48,118 @@
           "author": "weegembump",
           "body": "Text from the article..",
           "created_at": 1527695953341
+        },
+        {
+          "etc...": "etc..."
         }
       ]
     }
+  },
+  "POST /api/articles": {
+    "description": "creates a new article",
+    "exampleRequest": {
+      "title": "test article",
+      "topic": "paper",
+      "author": "lurker",
+      "body": "hello hello hello"
+  },
+    "exampleResponse": {
+      "article": {"article_id": "20",
+        "title": "test article",
+        "topic": "paper",
+        "author": "lurker",
+        "body": "hello hello hello",
+        "votes": 0,
+        "created_at": "2018-11-15T12:21:54.171Z"
+      }
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves the article specified by the id",
+    "parametricEndpoint": "article_id",
+    "exampleResponse": {
+        "article": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": "1",
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2018-11-15T12:21:54.171Z",
+        "votes": 100,
+        "comment_count": "13"
+      }
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "removes the specified article from the database",
+    "parametricEndpoint": "article_id",
+    "exampleResponse": "204 no content"
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "changes votes on the specified article and serves the changed article",
+    "parametricEndpoint": "article_id",
+    "exampleRequest": {"inc_votes": 10},
+    "exampleResponse": {
+      "author": "butter_bridge",
+      "title": "Living in the shadow of a great man",
+      "article_id": 1,
+      "body": "I find this existence challenging",
+      "topic": "mitch",
+      "created_at": "2018-11-15T12:21:54.171Z",
+      "votes": 110
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of comments belonging to the specified article",
+    "parametricEndpoint": "article_id",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": "16",
+          "body": "This is a bad article name",
+          "article_id": "6",
+          "author": "butter_bridge",
+          "votes": 1,
+          "created_at": "2018-11-15T12:21:54.171Z"
+        },
+        {
+          "etc...": "etc..."
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "creates a new comment on the specified article",
+    "parametricEndpoint": "article_id",
+    "exampleRequest": {
+      "username": "lurker",
+      "body": "This is a successful comment"
+  },
+    "exampleResponse": {
+      "author": "lurker",
+      "body": "This is a successful comment",
+      "article_id": "1",
+      "votes": 0,
+      "created_at": "2018-11-15T12:21:54.171Z",
+      "comment_id": "13"
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "changes votes on the specified comment and serves the changed comment",
+    "parametricEndpoint": "comment_id",
+    "exampleRequest": {"inc_votes": 10},
+    "exampleResponse": {
+      "comment_id": "1",
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "article_id": "9",
+      "author": "butter_bridge",
+      "votes": 26,
+      "created_at": "2018-11-15T12:21:54.171Z"
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes the specified comment from the database",
+    "parametricEndpoint": "comment_id",
+    "exampleResponse": "204 no content"
   }
 }

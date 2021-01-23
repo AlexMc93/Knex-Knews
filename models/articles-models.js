@@ -47,7 +47,7 @@ const updateArticleById = (changeVotes = 0, article_id) => {
     })
 }
 
-const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
+const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic, limit = 10, p = 1) => {
 
     if (order !== 'asc' && order !== 'desc') {
         return Promise.reject({
@@ -70,7 +70,9 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
         if (topic) query.where('articles.topic', '=', topic)
     })
     .groupBy('articles.article_id')
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .limit(limit)
+    .offset(limit * (p - 1))
 
     return Promise.all([userQuery, topicQuery, articleQuery])
     .then(([userExists, topicExists, articles]) => {

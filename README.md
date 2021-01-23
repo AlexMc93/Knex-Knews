@@ -1,18 +1,18 @@
-# KNEX KNEWS API
+# KNEX KNEWS API :newspaper: :clipboard:
 
 This is an API featuring data on topics, articles, users and comments in the style of Reddit.
 
-Please find a hosted version of this repo here **ADD URL**. Navigate to `/api` for a list of all endpoints that can be requested.
+Please find a hosted version of this repo here **ADD URL**. From the `/api` endpoint you can view a list of all endpoints that can be requested.
 
-This project formed part of the back-end phase of my time on the Northcoders bootcamp and was primarily created on a week-long sprint in January 2021.
+This project formed part of the back-end phase of my time on the Northcoders full-stack bootcamp and was primarily created on a week-long sprint in January 2021.
 
 This project utilizes the following tech:
 
-- PostgreSQL - database management
-- Express - server building
-- Knex - seeding & querying
-- Jest & Supertest - testing
-- Heroku - hosting
+- [PostgreSQL](https://www.postgresql.org/) - database management
+- [Express](https://expressjs.com/) - server building
+- [Knex](http://knexjs.org/) - seeding & querying
+- [Jest](https://jestjs.io/) & [Supertest](https://www.npmjs.com/package/supertest) - testing
+- [Heroku](https://www.heroku.com/) - hosting
 
 In addition, Insomnia Core was used during development for additional testing of API endpoints.
 
@@ -54,13 +54,11 @@ In the `/db/data` folder you will find development data and test data. When the 
 
 ## Knexfile.js configuration
 
-As mentioned above, Knex is an SQL query builder allowing us to interact with the database. There is some configuration to do in order for it to work properly on the version you have cloned. A template file has been provided to assist with this: `knexfile-template.js`. If you are running a Linux system, you will need to provide a valid value for the user and password properties on the customConfig object, for both development and test. This is your PostgreSQL username and password. Alternatively you could set up a [`.pgpass` file](https://www.postgresql.org/docs/9.4/libpq-pgpass.html).
-
-Furthermore, if you wish to connect to a remote database (more information on which can be found below) you will need to remove the forward slashes `//` from line 2 and lines 29-36 of this file.
+As mentioned above, Knex is an SQL query builder allowing us to interact with the database. There is some configuration to do in order for it to work properly on the version you have cloned. A template file has been provided to assist with this: `knexfile-template.js`. This file **MUST** be renamed `knexfile.js`! If you are running a Linux system, you will need to provide a valid value for the user and password properties on the customConfig object, for both development and test. This is your PostgreSQL username and password. Alternatively you could set up a [`.pgpass` file](https://www.postgresql.org/docs/9.4/libpq-pgpass.html).
 
 ## Schemas
 
-In the `db/migrations` folder you will find the files I used to create the tables and their respective columns using knex. This will give you a clear guide as to what data types are valid, which fields must have values (ie. `notNullable()`), which values are foreign keys etc. If you wish to make adjustments you can use the following command to create a new migration:
+In the `db/migrations` folder you will find the files used to create the tables and their respective columns using knex. This will give you a clear guide as to what data types are valid, which fields must have values (ie. `notNullable()`), which values are foreign keys etc. If you wish to make adjustments you can use the following command to create a new migration:
 
 ```
 npm run migrate-make
@@ -109,5 +107,16 @@ While the server is listening on a local port, you can use an application like [
 ## Requests
 
 You can find a list of all available routes in the file `endpoints.json`. To understand how a request to the server is handled, please explore the `routers`, `controllers` and `models` folders. This follows the pattern of MVC design. Finally, you can find error handling is dealt with in the file `controllers/error-handling.js`.
+
+## Contributors
+
+I initially started on this project pair-programming with [Melissa Astbury](https://github.com/MelissaAstbury), a fellow Northcoder and an excellent Software Engineer!
+
+## To-do list
+
+- Front-End! (coming soon...)
+- Added functionality so users can log in
+- More endpoints and query options
+- Protection for endpoints with JWT authorization
 
 ### Any comments, feedback or questions are welcome. Thanks for reading!

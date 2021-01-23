@@ -5,11 +5,11 @@ const connection = require('../db/connection');
 
 afterAll(() => {
    return connection.destroy()
-})
+});
 
 beforeEach(() => {
     return connection.seed.run()
-})
+});
 
 describe('/invalidRoute', () => {
     it('any method : 404 - invalid route', () => {
@@ -33,7 +33,7 @@ describe('/invalidRoute', () => {
 
 describe('/api/topics', () => {
     describe('HAPPY PATH :)', () => {
-        it('GET : 200 - response with an array of topics', () => {
+        it('GET : 200 - responds with an array of topics', () => {
             return request(app)
             .get('/api/topics')
             .expect(200)
@@ -45,8 +45,89 @@ describe('/api/topics', () => {
                 }));
             });
         });
+        it('GET : 200 - default response is sorted by slug in ascending order', () => {
+            return request(app)
+            .get('/api/topics')
+            .expect(200)
+            .then(({ body: { topics }}) => {
+                expect(topics).toBeSortedBy('slug');
+            });
+        });
+        it('GET : 200 - sort_by query allows results to be sorted by other valid column names', () => {
+            return request(app)
+            .get('/api/topics?sort_by=description')
+            .expect(200)
+            .then(({ body: { topics }}) => {
+                expect(topics).toBeSortedBy('description');
+            });
+        });
+        it('GET : 200 - slug query allows specific topic to be found', () => {
+            return request(app)
+            .get('/api/topics?slug=paper')
+            .expect(200)
+            .then(({ body: { topics }}) => {
+                expect(topics.length).toBe(1)
+                expect(topics[0].slug).toBe('paper')
+            });
+        });
+        it('GET : 200 - order can be specified as `desc` so the results are served in descending order', () => {
+            return request(app)
+            .get('/api/topics?order=desc')
+            .expect(200)
+            .then(({ body: { topics }}) => {
+                expect(topics).toBeSortedBy('slug', {
+                    descending: true
+                });
+            });
+        });
+        it('GET : 200 - sort_by and order queries can be used in conjunction', () => {
+            return request(app)
+            .get('/api/topics?sort_by=description&order=desc')
+            .expect(200)
+            .then(({ body: { topics }}) => {
+                expect(topics).toBeSortedBy('description', {
+                    descending: true
+                });
+            });
+        });
+        it('POST : 201 - responds with the newly created topic', () => {
+            return request(app)
+            .post('/api/topics')
+            .send({slug: 'Music', description: 'The new Bicep album is AMAZING'})
+            .expect(201)
+            .then(({ body: { topic } }) => {
+                expect(topic).toEqual({
+                    slug: 'Music',
+                    description: 'The new Bicep album is AMAZING'
+                });
+            });
+        });
     });
     describe('ERRORS :(', () => {
+        it('GET : 400 - when given an invalid column name to sort by', () => {
+            return request(app)
+            .get('/api/topics?sort_by=invalidColumn')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('GET : 400 - when given an invalid order value', () => {
+            return request(app)
+            .get('/api/topics?order=alsoInvalid')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Order must be equal to `asc` or `desc`')
+            });
+        });
+        it('GET : 404 - when given a slug that does not exist', () => {
+            return request(app)
+            .get('/api/topics?slug=cricket')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Topic cricket not found')
+            });
+        });
         it('INVALID METHOD (delete) : 405 - delete request responds with appropriate message', () => {
             return request(app)
             .del('/api/topics')
@@ -61,12 +142,148 @@ describe('/api/topics', () => {
             .expect(405)
             .then(({ body }) => {
                 expect(body.msg).toBe('Not allowed - invalid request method')
-            })
-        })
-    })
+            });
+        });
+        it('POST : 400 - when slug is missing', () => {
+            return request(app)
+            .post('/api/topics')
+            .send({description: 'Is this going to work?'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('POST : 400 - when given a slug that already exists', () => {
+            return request(app)
+            .post('/api/topics')
+            .send({slug: 'paper', description: 'Another fail'})
+        });
+    });
 });
 
 describe('/api/users', () => {
+    describe('HAPPY PATH :)', () => {
+        it('GET : 200 - responds with an array of all users', () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body : { users }}) => {
+                expect(users.length).toBe(4)
+                expect(users[0]).toEqual({
+                    username: 'butter_bridge',
+                    name: 'jonny',
+                    avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                });
+            });
+        });
+        it('GET : 200 - default response is sorted by username in ascending order', () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users).toBeSortedBy('username');
+            });
+        });
+        it('GET : 200 - sort_by query allows results to be sorted by other valid column names', () => {
+            return request(app)
+            .get('/api/users?sort_by=name')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users).toBeSortedBy('name');
+            });
+        });
+        it('GET : 200 - order can be specified as `desc` so results are served in descending order', () => {
+            return request(app)
+            .get('/api/users?order=desc')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users).toBeSortedBy('username', {
+                    descending: true
+                });
+            });
+        });
+        it('GET : 200 - sort_by and order queries can be used in conjunction', () => {
+            return request(app)
+            .get('/api/users?sort_by=name&order=desc')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users).toBeSortedBy('name', {
+                    descending: true
+                });
+            });
+        });
+        it('GET : 200 - limit can be specified to change the number of results served', () => {
+            return request(app)
+            .get('/api/users?limit=2')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users.length).toBe(2)
+            });
+        });
+        it('GET : 200 - page can be specified to change the section of results served', () => {
+            return request(app)
+            .get('/api/users?limit=2&p=2')
+            .expect(200)
+            .then(({ body: { users }}) => {
+                expect(users.length).toBe(2)
+                expect(users[1].username).toBe('rogersop')
+            });
+        });
+        it('POST : 201 - responds with the newly created user', () => {
+            return request(app)
+            .post('/api/users')
+            .send({username: 'Amac', name: 'alex', avatar_url: 'https://static.tvtropes.org/pmwiki/pub/images/morty_smith_2.png'})
+            .expect(201)
+            .then(({body : { user }}) => {
+                expect(user).toEqual({username: 'Amac', name: 'alex', avatar_url: 'https://static.tvtropes.org/pmwiki/pub/images/morty_smith_2.png'})
+            })
+        });
+    });
+    describe('ERRORS :(', () => {
+        it('GET : 400 - when given an invalid column name to sort by', () => {
+            return request(app)
+            .get('/api/users?sort_by=thisIsNotValid')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('GET : 400 - when given an invalid order value', () => {
+            return request(app)
+            .get('/api/users?order=invalid')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Order must be equal to `asc` or `desc`')
+            });
+        });
+        it('POST : 400 - when request body is missing a required field', () => {
+            return request(app)
+            .post('/api/users')
+            .send({name: 'alex', avatar_url: 'https://static.tvtropes.org/pmwiki/pub/images/morty_smith_2.png'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('POST : 400 - when attempting to create a username that already exists', () => {
+            return request(app)
+            .post('/api/users')
+            .send({username: 'lurker', name: 'alex', avatar_url: 'jpg'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+        it('POST : 400 - when given an invalid input for a field', () => {
+            return request(app)
+            .post('/api/users')
+            .send({username: null, name: 'alex', avatar_url: 'jpg'})
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request - please try something else!')
+            });
+        });
+    });
     describe('/:username', () => {
         describe('HAPPY PATH :)', () => {
             it('GET : 200 - responds with the specified user', () => {
@@ -331,7 +548,7 @@ describe('/api/articles/:article_id/comments', () => {
                     comments: []
                 })
             })
-        })
+        });
         it('GET : 200 - default response is sorted by created_at in descending order', () => {
             return request(app)
             .get('/api/articles/1/comments')
@@ -359,7 +576,7 @@ describe('/api/articles/:article_id/comments', () => {
             .then(({ body: { comments } }) => {
                 expect(comments).toBeSortedBy('created_at')
             })
-        })
+        });
     });
     describe('ERRORS :(', () => {
         it('POST : 404 - when given a valid article_id that does not exist', () => {
@@ -464,12 +681,12 @@ describe('/api/articles/:article_id/comments', () => {
 
 describe('/api/articles', () => {
     describe('HAPPY PATH :)', () => {
-        it('GET : 200 - responds with an array of all articles', () => {
+        it('GET : 200 - responds with an array of all articles (first 10 only due to default limit)', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
             .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(12)
+                expect(articles.length).toBe(10)
                 expect(articles[0]).toEqual({
                     author: expect.any(String),
                     title: expect.any(String),
@@ -528,7 +745,7 @@ describe('/api/articles', () => {
                 expect(articles[0].topic).toBe('cats')
             });
         });
-        it('GET : 200 - can chain multiple queries together to get a very specific response', () => {
+        it('GET : 200 - can chain multiple queries together to get a more specific response', () => {
             return request(app)
             .get('/api/articles?topic=mitch&author=rogersop&sort_by=title&order=asc')
             .expect(200)
@@ -546,6 +763,38 @@ describe('/api/articles', () => {
             .then(({ body }) => {
                 expect(body.articles).toEqual([])
             })
+        });
+        it('GET : 200 - responds with first 3 articles when limit is specified as such in the query', () => {
+            return request(app)
+            .get('/api/articles?limit=3')
+            .expect(200)
+            .then(({ body: { articles }}) => {
+                expect(articles.length).toBe(3)
+            });
+        });
+        it('GET : 200 - responds with 2nd page of results when p is specified as such in the query', () => {
+            return request(app)
+            .get('/api/articles?p=2')
+            .expect(200)
+            .then(({ body: { articles }}) => {
+                expect(articles.length).toBe(2)
+            });
+        });
+        it('GET : 200 - limit and p can be used in conjunction in a single query', () => {
+            return request(app)
+            .get('/api/articles?limit=4&p=3')
+            .expect(200)
+            .then(({ body: { articles }}) => {
+                expect(articles.length).toBe(4)
+            });
+        });
+        it('GET : 200 - responds with an empty array when page number is higher than number of results', () => {
+            return request(app)
+            .get('/api/articles?p=50')
+            .expect(200)
+            .then(({ body: { articles }}) => {
+                expect(articles).toEqual([]);
+            });
         });
         it('POST : 201 - responds with the newly created article (including article_id, votes set to 0 and created_at timestamp)', () => {
             return request(app)
@@ -699,7 +948,7 @@ describe('/api/comments/:comment_id', () => {
             .then(({ body }) => {
                 expect(body.comment.votes).toBe(16)
             })
-        })
+        });
         it('DELETE : 204 - no content upon successful deletion', () => {
             const deleted = request(app)
             .del('/api/comments/1')
@@ -711,7 +960,7 @@ describe('/api/comments/:comment_id', () => {
             .expect(404)
             
             return Promise.all([deleted, notFound])
-        })
+        });
     });
     describe('ERRORS :(', () => {
         it('PATCH : 404 - when given a valid comment id that does not exist', () => {
@@ -765,7 +1014,7 @@ describe('/api/comments/:comment_id', () => {
             .then(({ body }) => {
                 expect(body.msg).toBe('Not allowed - invalid request method')
             })
-        })
+        });
     });
 });
 
@@ -779,16 +1028,16 @@ describe('/api', () => {
                 expect(body.endpoints).toHaveProperty('GET /api')
                 expect(body.endpoints).toHaveProperty('GET /api/topics')
             })
-        })
+        });
     });
     describe('ERRORS :(', () => {
-        it('INVALID METHODS : 405 - for del/patch/post', () => {
+        it('INVALID METHODS : 405 - for del/patch/post/put', () => {
             return request(app)
             .del('/api')
             .expect(405)
             .then(({ body }) => {
                 expect(body.msg).toBe('Not allowed - invalid request method')
-            })
-        })
+            });
+        });
     });
-})
+});

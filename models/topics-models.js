@@ -1,8 +1,17 @@
 const connection = require('../db/connection');
 
-const fetchAllTopics = (slug) => {
+const fetchAllTopics = (slug, sort_by = 'slug', order = 'asc') => {
+
+    if (order !== 'asc' && order !== 'desc') {
+        return Promise.reject({
+            status: 400, 
+            msg: 'Order must be equal to `asc` or `desc`'
+        })
+    }
+
     return connection('topics')
         .select('*')
+        .orderBy(sort_by, order)
         .modify((query) => {
             if (slug) query.where('slug', '=', slug)
         })
@@ -15,4 +24,11 @@ const fetchAllTopics = (slug) => {
         })
 };
 
-module.exports = { fetchAllTopics }
+const createTopic = (newTopic) => {
+    const { slug, description } = newTopic;
+    return connection('topics')
+        .insert([{ slug, description }])
+        .returning('*')
+}
+
+module.exports = { fetchAllTopics, createTopic }
