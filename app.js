@@ -1,6 +1,6 @@
 const express = require('express');
 const apiRouter = require('./routers/api-router');
-const welcomePage = require('./controllers/api-controller');
+const { welcomePage } = require('./controllers/api-controller');
 const app = express();
 app.use(express.json());
 
