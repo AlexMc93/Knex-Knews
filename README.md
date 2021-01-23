@@ -2,7 +2,7 @@
 
 This is an API featuring data on topics, articles, users and comments in the style of Reddit.
 
-Please find a hosted version of this repo here **ADD URL**. From the `/api` endpoint you can view a list of all endpoints that can be requested.
+Please find a hosted version of this repo [here](https://alex-mc-news-app.herokuapp.com/api/). From the `/api` endpoint you can view a list of all endpoints that can be requested.
 
 This project formed part of the back-end phase of my time on the Northcoders full-stack bootcamp and was primarily created on a week-long sprint in January 2021.
 
@@ -21,7 +21,7 @@ In addition, Insomnia Core was used during development for additional testing of
 If you would like to clone this repository to use, do so by running the following terminal command while in the desired working directory:
 
 ```
-git clone https://github.com/AlexMc93/be-nc-news.git
+git clone https://github.com/AlexMc93/Knex-Knews.git
 ```
 
 You will need to have installed [node.js](https://nodejs.org/en/) (v14.14.0 or later), a back-end JavaScript runtime environment, and [PostgreSQL](https://www.postgresql.org/) (v12.5 or later), a relational database management system.
@@ -104,6 +104,8 @@ While the server is listening on a local port, you can use an application like [
 
 ## Run remotely
 
+To run the server on a remote database I would recommend using Heroku, more details can be found [here](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
+
 ## Requests
 
 You can find a list of all available routes in the file `endpoints.json`. To understand how a request to the server is handled, please explore the `routers`, `controllers` and `models` folders. This follows the pattern of MVC design. Finally, you can find error handling is dealt with in the file `controllers/error-handling.js`.
@@ -116,7 +118,7 @@ I initially started on this project pair-programming with [Melissa Astbury](http
 
 - Front-End! (coming soon...)
 - Added functionality so users can log in
-- More endpoints and query options
+- More endpoints, query and pagination options
 - Protection for endpoints with JWT authorization
 
 ### Any comments, feedback or questions are welcome. Thanks for reading!

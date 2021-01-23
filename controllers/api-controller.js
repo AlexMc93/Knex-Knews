@@ -8,4 +8,8 @@ const getAllEndpoints = (req, res, next) => {
         .catch(next)
 }
 
-module.exports = { getAllEndpoints };
+const welcomePage = (req, res, next) => {
+    res.status(200).send({msg: "Welcome! Please navigate to /api to view the available endpoints."})
+}
+
+module.exports = { getAllEndpoints, welcomePage };
