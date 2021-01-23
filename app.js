@@ -6,7 +6,7 @@ app.use(express.json());
 
 const { customError, invalidPathError, PSQLnotFoundError, genericPSQLError, serverError } = require('./controllers/error-handling');
 
-app.use('/', welcomePage);
+app.route('/').get(welcomePage);
 app.use('/api', apiRouter);
 
 app.all('/*', invalidPathError);
