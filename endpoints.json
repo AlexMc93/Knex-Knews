@@ -111,6 +111,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments belonging to the specified article",
+    "queries": ["sort_by", "order", "limit", "p"],
     "parametricEndpoint": "article_id",
     "exampleResponse": {
       "comments": [
