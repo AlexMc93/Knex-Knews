@@ -41,6 +41,7 @@
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
+      "article_count": 7,
       "articles": [
         {
           "title": "Seafood substitutions are increasing",

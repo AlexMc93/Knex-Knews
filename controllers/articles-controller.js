@@ -25,7 +25,7 @@ const patchArticleById = (req, res, next) => {
 const getAllArticles = (req, res, next) => {
     const { sort_by, order, author, topic, limit, p } = req.query;
     selectAllArticles(sort_by, order, author, topic, limit, p)
-        .then((articles) => res.status(200).send({ articles }))
+        .then(([article_count, articles]) => res.status(200).send({ article_count, articles }))
         .catch(next)
 }
 

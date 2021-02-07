@@ -71,18 +71,21 @@ const selectAllArticles = (sort_by = 'created_at', order = 'desc', author, topic
     })
     .groupBy('articles.article_id')
     .orderBy(sort_by, order)
-    .limit(limit)
-    .offset(limit * (p - 1))
 
     return Promise.all([userQuery, topicQuery, articleQuery])
     .then(([userExists, topicExists, articles]) => {
         if (articles.length) {
-            return articles.map((article) => {
-                article.comment_count = +article.comment_count
-                return article
+            const article_count = articles.length;
+            return Promise.all([article_count, articleQuery.limit(limit).offset(limit * (p - 1))])
+            .then(([article_count, articles]) => {
+                const articlesToReturn = articles.map((article) => {
+                    article.comment_count = +article.comment_count
+                    return article
+                })
+                return [article_count, articlesToReturn]
             })
         } else {
-            return articles
+            return [0, articles]
         }
     })
 }

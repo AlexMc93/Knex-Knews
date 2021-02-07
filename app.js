@@ -1,8 +1,10 @@
 const express = require('express');
 const apiRouter = require('./routers/api-router');
 const { welcomePage } = require('./controllers/api-controller');
+const cors = require('cors');
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const { customError, invalidPathError, PSQLnotFoundError, genericPSQLError, serverError } = require('./controllers/error-handling');
 
