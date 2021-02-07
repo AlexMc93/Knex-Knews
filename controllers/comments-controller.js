@@ -14,7 +14,7 @@ const getCommentsOnArticle = (req, res, next) => {
     const { article_id } = req.params;
     const { sort_by, order, limit, p } = req.query;
     selectCommentsOnArticle(article_id, sort_by, order, limit, p)
-        .then((comments) => res.status(200).send({ comments }))
+        .then(([comment_count, comments]) => res.status(200).send({ comment_count, comments }))
         .catch(next)
 }
 

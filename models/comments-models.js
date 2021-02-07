@@ -9,18 +9,18 @@ const createCommentOnArticle = (comment) => {
 const selectCommentsOnArticle = (article_id, sort_by = "created_at", order = "desc", limit = 10, p = 1) => {
     if (order !== 'asc' && order !== 'desc') {
         return Promise.reject({status: 400, msg: 'Order must be equal to `asc` or `desc`'})
-    } else if (typeof limit !== 'number' || typeof p !== 'number') {
+    } else if (typeof +limit !== 'number' || typeof +p !== 'number') {
         return Promise.reject({
             status: 400,
             msg: 'Please provide integer numbers for `limit` and `p` query'
         })
     } else {
-        return connection('comments')
+        const commentQuery = connection('comments')
         .select('*')
         .where('article_id', '=', article_id)
         .orderBy(sort_by, order)
-        .limit(limit)
-        .offset(limit * (p - 1))
+
+        return commentQuery
         .then((comments) => {
             if (comments.length) return [comments];
             else {               
@@ -31,7 +31,7 @@ const selectCommentsOnArticle = (article_id, sort_by = "created_at", order = "de
             }
         })
         .then(([comments, articles]) => {
-            if (!articles || articles.length) return comments
+            if (!articles || articles.length) return Promise.all([comments.length, commentQuery.limit(limit).offset(limit * (p - 1))])
             else return Promise.reject({status: 404, msg: 'Article not found'})
         })
     }

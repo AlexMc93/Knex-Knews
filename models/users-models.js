@@ -22,16 +22,17 @@ const fetchAllUsers = (sort_by = 'username', order = 'asc', limit = 10, p = 1) =
         })
     }
 
-    return connection('users')
+    const userQuery = connection('users')
         .select('*')
         .orderBy(sort_by, order)
-        .limit(limit)
-        .offset(limit * (p - 1))
+
+    return userQuery
         .then((users) => {
             if (!users.length) {
                 return Promise.reject({status: 404, msg: 'No users exist! Post one at `/api/users`'})
             } else {
-                return users
+                const user_count = users.length;
+                return Promise.all([user_count, userQuery.limit(limit).offset(limit * (p - 1))])
             }
         })
 }

@@ -545,6 +545,7 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(200)
             .then(({ body }) => {
                 expect(body).toEqual({
+                    comment_count: 0,
                     comments: []
                 })
             })

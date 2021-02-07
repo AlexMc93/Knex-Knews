@@ -10,7 +10,7 @@ const getUserByUsername = (req, res, next) => {
 const getAllUsers = (req, res, next) => {
     const { sort_by, order, limit, p } = req.query;
     fetchAllUsers(sort_by, order, limit, p)
-        .then((users) => res.status(200).send({ users }))
+        .then(([user_count, users]) => res.status(200).send({ user_count, users }))
         .catch(next)
 }
 
