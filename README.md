@@ -116,7 +116,7 @@ I initially started on this project pair-programming with [Melissa Astbury](http
 
 ## To-do list
 
-- Front-End! (coming soon...)
+- Front-End! `DONE!` - see here https://github.com/AlexMc93/Knex-Knews-Front-End
 - Added functionality so users can log in
 - More endpoints, query and pagination options
 - Protection for endpoints with JWT authorization
